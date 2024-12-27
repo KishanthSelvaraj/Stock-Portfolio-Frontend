@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet 
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -96,9 +92,17 @@ const PortfolioSummary = ({ stats }) => {
   return (
     <div className="space-y-6 bg-gray-900 p-8 rounded-xl">
       {/* Flex container for left and right sections */}
-      <div className="flex space-x-8">
+      <div className="flex flex-wrap lg:flex-nowrap space-y-6 md:space-y-0 md:space-x-8">
+        {/* Right section - Pie Chart */}
+        <div className="w-full lg:w-1/3 order-1 md:order-none mb-6">
+          <div className="bg-gray-800 p-6 rounded-xl shadow-xl border-2 border-indigo-500">
+            <div className="text-2xl font-semibold text-white mb-4">Portfolio Distribution</div>
+            <Pie data={pieChartData} />
+          </div>
+        </div>
+
         {/* Left section - Gain/Loss Data */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6 order-2 md:order-none">
           {/* Total Portfolio Value - Full Width */}
           <div className="bg-gray-800 overflow-hidden shadow-xl border-2 border-purple-600 rounded-xl hover:scale-105 transition-transform duration-300">
             <div className="p-6">
@@ -154,14 +158,6 @@ const PortfolioSummary = ({ stats }) => {
               </div>
             );
           })}
-        </div>
-
-        {/* Right section - Pie Chart */}
-        <div className="flex-none w-1/3">
-          <div className="bg-gray-800 p-6 rounded-xl shadow-xl border-2 border-indigo-500">
-            <div className="text-2xl font-semibold text-white mb-4">Portfolio Distribution</div>
-            <Pie data={pieChartData} />
-          </div>
         </div>
       </div>
     </div>

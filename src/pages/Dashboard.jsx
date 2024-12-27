@@ -23,9 +23,9 @@ const Dashboard = () => {
     <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg">
       Portfolio Dashboard
     </h1>
-    <div className="text-sm text-gray-400 shadow-sm">
+    {/* <div className="text-sm text-gray-400 shadow-sm">
       Last updated: {new Date().toLocaleString()}
-    </div>
+    </div> */}
   </div>
   <PortfolioSummary stats={mockStats} />
 </div>
