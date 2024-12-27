@@ -16,7 +16,7 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/stocks/available-tickers`)
+      .get(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/available-tickers`)
       .then((response) => setAvailableTickers(response.data))
       .catch((error) => console.error('Error fetching available tickers:', error));
   }, []);
@@ -58,7 +58,7 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
       buyPrice: formData.buyPrice,
     };
     axios
-      .post(`http://localhost:8080/api/stocks`, stockData)
+      .post(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks`, stockData)
       .then((response) => onSubmit(response.data))
       .catch((error) => console.error('Error adding stock:', error));
   };
