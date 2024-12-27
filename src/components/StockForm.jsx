@@ -69,25 +69,35 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
       className="space-y-6 p-8 rounded-lg shadow-2xl w-full bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form"
     >
       <div className="grid grid-cols-1 gap-6">
-        <div className="col-span-1">
-          <label htmlFor="symbol" className="block text-base font-semibold text-white neon-label">
-            Stock Symbol
-          </label>
-          <select
-            id="symbol"
-            value={formData.symbol}
-            onChange={handleSymbolChange}
-            className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
-            required
-          >
-            <option value="">Select Stock Symbol</option>
-            {availableTickers.map((ticker) => (
-              <option key={ticker.ticker} value={ticker.ticker}>
-                {ticker.ticker} - {ticker.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="col-span-1">
+  <label
+    htmlFor="symbol"
+    className="block text-base font-semibold text-white neon-label"
+  >
+    Stock Symbol
+  </label>
+  <select
+    id="symbol"
+    value={formData.symbol}
+    onChange={handleSymbolChange}
+    className="mt-2 block w-full rounded-lg bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form p-3 text-white border border-gray-300 neon-input"
+    required
+  >
+    <option value="" className="bg-black text-white">
+      Select Stock Symbol
+    </option>
+    {availableTickers.map((ticker) => (
+      <option
+        key={ticker.ticker}
+        value={ticker.ticker}
+        className="bg-black text-white"
+      >
+        {ticker.ticker} - {ticker.name}
+      </option>
+    ))}
+  </select>
+</div>
+
 
         <div className="col-span-1">
           <label htmlFor="name" className="block text-base font-semibold text-white neon-label">

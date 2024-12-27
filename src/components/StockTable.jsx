@@ -42,7 +42,7 @@ const StockTable = ({ onEdit, onDelete }) => {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/stocks');
+        const response = await axios.get('https://stock-portfolio-backend-ub88.onrender.com/api/stocks');
         const formattedStocks = await Promise.all(
           response.data.map(async (stock) => {
             const currentPrice = await fetchStockPrice(stock.ticker);
@@ -65,7 +65,7 @@ const StockTable = ({ onEdit, onDelete }) => {
   // Fetch individual stock data for editing
   const handleEditClick = async (stock) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/stocks/${stock.id}`);
+      const response = await axios.get(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/${stock.id}`);
       setFormData({
         ticker: response.data.ticker,
         name: response.data.name,
@@ -82,7 +82,7 @@ const StockTable = ({ onEdit, onDelete }) => {
   // Handle stock deletion
   const handleDeleteClick = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/stocks/${id}`);
+      await axios.delete(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/${id}`);
       setStocks((prevStocks) => prevStocks.filter((stock) => stock.id !== id));
     } catch (error) {
       console.error('Error deleting stock:', error);
@@ -98,7 +98,7 @@ const StockTable = ({ onEdit, onDelete }) => {
       const updatedStock = { ...formData, id: currentStock.id };
   
       // First, update the stock data in the database
-      const response = await axios.put(`http://localhost:8080/api/stocks/${updatedStock.id}`, updatedStock);
+      const response = await axios.put(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/${updatedStock.id}`, updatedStock);
   
       // Fetch the current price for the updated stock
       const currentPrice = await fetchStockPrice(updatedStock.ticker);

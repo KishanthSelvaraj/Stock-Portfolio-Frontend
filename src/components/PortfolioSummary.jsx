@@ -46,7 +46,7 @@ const PortfolioSummary = ({ stats }) => {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/stocks');
+        const response = await axios.get('https://stock-portfolio-backend-ub88.onrender.com/api/stocks');
         const formattedStocks = await Promise.all(
           response.data.map(async (stock) => {
             const currentPrice = await fetchStockPrice(stock.ticker);
