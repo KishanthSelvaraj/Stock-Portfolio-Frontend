@@ -50,7 +50,7 @@ This project is entirely developed by me and does not rely on public sources or 
 
 
 ## Deployment Links
-- **Frontend**: Hosted on [Vercel](https://stock-portfolio-frontend-sigma.vercel.app/dashboard).  
+- **Frontend**: Hosted on [Vercel](https://stock-portfolio-frontend-sigma.vercel.app).  
 - **Backend**: Hosted on [Render](https://stock-portfolio-backend-ub88.onrender.com).  
 
 
