@@ -13,8 +13,9 @@ const StockTable = ({ onEdit, onDelete }) => {
     quantity: 0,
     buyPrice: 0,
   });
+  const [isLoading, setIsLoading] = useState(false); // State for loading spinner
 
-  const API_KEY = 'VPXNB3HUB8NT8YR9';
+  const API_KEY = 'CZH1KTUY8EBQS3FY';
   const BASE_URL = 'https://www.alphavantage.co/query';
 
   // Fetch stock price for a given ticker
@@ -22,8 +23,6 @@ const StockTable = ({ onEdit, onDelete }) => {
     const url = `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=5min&apikey=${API_KEY}`;
     try {
       const response = await axios.get(url);
-      console.log(response);
-      
       const timeSeries = response.data['Time Series (5min)'];
       if (timeSeries) {
         const latestTimestamp = Object.keys(timeSeries)[0];
@@ -41,6 +40,7 @@ const StockTable = ({ onEdit, onDelete }) => {
   // Fetch stock data
   useEffect(() => {
     const fetchStocks = async () => {
+      setIsLoading(true); // Show spinner
       try {
         const response = await axios.get('https://stock-portfolio-backend-ub88.onrender.com/api/stocks');
         const formattedStocks = await Promise.all(
@@ -55,12 +55,13 @@ const StockTable = ({ onEdit, onDelete }) => {
         setStocks(formattedStocks);
       } catch (error) {
         console.error('Error fetching stocks:', error);
+      } finally {
+        setIsLoading(false); // Hide spinner
       }
     };
-  
+
     fetchStocks();
   }, []);
-  
 
   // Fetch individual stock data for editing
   const handleEditClick = async (stock) => {
@@ -92,27 +93,18 @@ const StockTable = ({ onEdit, onDelete }) => {
   // Handle form submit for updating stock
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      // Get the updated stock data
       const updatedStock = { ...formData, id: currentStock.id };
-  
-      // First, update the stock data in the database
       const response = await axios.put(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/${updatedStock.id}`, updatedStock);
-  
-      // Fetch the current price for the updated stock
       const currentPrice = await fetchStockPrice(updatedStock.ticker);
-  
-      // Update the stock list with the new price
+
       setStocks((prevStocks) =>
         prevStocks.map((stock) =>
-          stock.id === updatedStock.id
-            ? { ...response.data, currentPrice }  // Update stock with the new current price
-            : stock
+          stock.id === updatedStock.id ? { ...response.data, currentPrice } : stock
         )
       );
-  
-      // Reset editing state and form
+
       setIsEditing(false);
       setCurrentStock(null);
       setFormData({
@@ -125,7 +117,6 @@ const StockTable = ({ onEdit, onDelete }) => {
       console.error('Error updating stock:', error);
     }
   };
-  
 
   // Format currency
   const formatCurrency = (value) => {
@@ -152,6 +143,14 @@ const StockTable = ({ onEdit, onDelete }) => {
 
   return (
     <div className="p-6 bg-gray-900 rounded-lg shadow-2xl">
+    {isLoading && (
+      <div
+        className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
+        style={{ zIndex: 1000 }}
+      >
+        <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )}
     <div className="mb-6 text-2xl font-semibold text-white">
       Total Portfolio Value: {formatCurrency(totalPortfolioValue)}
     </div>
@@ -224,6 +223,7 @@ const StockTable = ({ onEdit, onDelete }) => {
                 </label>
                 <input
                   type="text"
+                  readOnly
                   id="ticker"
                   value={formData.ticker}
                   onChange={(e) => setFormData({ ...formData, ticker: e.target.value })}
@@ -242,6 +242,7 @@ const StockTable = ({ onEdit, onDelete }) => {
                 <input
                   type="text"
                   id="name"
+                  readOnly
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="mt-2 block w-full rounded-lg border-2 border-transparent bg-gray-800 p-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
@@ -280,6 +281,7 @@ const StockTable = ({ onEdit, onDelete }) => {
                 <input
                   type="number"
                   id="buyPrice"
+                  readOnly
                   step="0.01"
                   value={formData.buyPrice}
                   onChange={(e) =>

@@ -16,12 +16,15 @@ const PortfolioSummary = ({ stats }) => {
   };
 
   const [stocks, setStocks] = useState([]);
+    const [isLoading, setIsLoading] = useState(false); // State for loading spinner
+  
 
   // Fetch stock price for a given ticker
-  const API_KEY = 'VPXNB3HUB8NT8YR9';
+  const API_KEY = 'CZH1KTUY8EBQS3FY';
   const BASE_URL = 'https://www.alphavantage.co/query';
 
   const fetchStockPrice = async (ticker) => {
+    setIsLoading(true); // Show spinner
     const url = `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=5min&apikey=${API_KEY}`;
     try {
       const response = await axios.get(url);
@@ -37,10 +40,14 @@ const PortfolioSummary = ({ stats }) => {
       console.error('Error fetching stock price:', error);
       return 1; // Default value in case of error
     }
+    finally {
+      setIsLoading(false); // Hide spinner
+    }
   };
 
   useEffect(() => {
     const fetchStocks = async () => {
+      setIsLoading(true); // Show spinner
       try {
         const response = await axios.get('https://stock-portfolio-backend-ub88.onrender.com/api/stocks');
         const formattedStocks = await Promise.all(
@@ -55,6 +62,9 @@ const PortfolioSummary = ({ stats }) => {
         setStocks(formattedStocks);
       } catch (error) {
         console.error('Error fetching stocks:', error);
+      }
+      finally {
+        setIsLoading(false); // Hide spinner
       }
     };
 
@@ -91,6 +101,14 @@ const PortfolioSummary = ({ stats }) => {
 
   return (
     <div className="space-y-6 bg-gray-900 p-8 rounded-xl">
+       {isLoading && (
+      <div
+        className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
+        style={{ zIndex: 1000 }}
+      >
+        <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )}
       {/* Flex container for left and right sections */}
       <div className="flex flex-wrap lg:flex-nowrap space-y-6 md:space-y-0 md:space-x-8">
         {/* Right section - Pie Chart */}

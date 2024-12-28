@@ -10,18 +10,22 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
   });
   const [availableTickers, setAvailableTickers] = useState([]);
   const [stockPrice, setStockPrice] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Loading spinner state
 
-  const API_KEY = 'VPXNB3HUB8NT8YR9';
+  const API_KEY = 'CZH1KTUY8EBQS3FY';
   const BASE_URL = 'https://www.alphavantage.co/query';
 
   useEffect(() => {
+    setIsLoading(true); // Show spinner when fetching available tickers
     axios
       .get(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks/available-tickers`)
       .then((response) => setAvailableTickers(response.data))
-      .catch((error) => console.error('Error fetching available tickers:', error));
+      .catch((error) => console.error('Error fetching available tickers:', error))
+      .finally(() => setIsLoading(false)); // Hide spinner after data is fetched
   }, []);
 
   const fetchStockPrice = (ticker) => {
+    setIsLoading(true); // Show spinner when fetching stock price
     const url = `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=5min&apikey=${API_KEY}`;
     axios
       .get(url)
@@ -35,7 +39,8 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
           buyPrice: parseFloat(latestPrice),
         }));
       })
-      .catch((error) => console.error('Error fetching stock price:', error));
+      .catch((error) => console.error('Error fetching stock price:', error))
+      .finally(() => setIsLoading(false)); // Hide spinner after data is fetched
   };
 
   const handleSymbolChange = (e) => {
@@ -51,6 +56,7 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true); // Show spinner when submitting the form
     const stockData = {
       name: formData.name,
       ticker: formData.symbol,
@@ -60,111 +66,121 @@ const StockForm = ({ initialData, onSubmit, onCancel }) => {
     axios
       .post(`https://stock-portfolio-backend-ub88.onrender.com/api/stocks`, stockData)
       .then((response) => onSubmit(response.data))
-      .catch((error) => console.error('Error adding stock:', error));
+      .catch((error) => console.error('Error adding stock:', error))
+      .finally(() => setIsLoading(false)); // Hide spinner after form submission
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 p-8 rounded-lg shadow-2xl w-full bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form"
-    >
-      <div className="grid grid-cols-1 gap-6">
-      <div className="col-span-1">
-  <label
-    htmlFor="symbol"
-    className="block text-base font-semibold text-white neon-label"
-  >
-    Stock Symbol
-  </label>
-  <select
-    id="symbol"
-    value={formData.symbol}
-    onChange={handleSymbolChange}
-    className="mt-2 block w-full rounded-lg bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form p-3 text-white border border-gray-300 neon-input"
-    required
-  >
-    <option value="" className="bg-black text-white">
-      Select Stock Symbol
-    </option>
-    {availableTickers.map((ticker) => (
-      <option
-        key={ticker.ticker}
-        value={ticker.ticker}
-        className="bg-black text-white"
+    <>
+      {isLoading && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
+          style={{ zIndex: 1000 }}
+        >
+          <div className="w-8 h-8 border-4 border-[#eda62b] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 p-8 rounded-lg shadow-2xl w-full bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form"
       >
-        {ticker.ticker} - {ticker.name}
-      </option>
-    ))}
-  </select>
-</div>
+        <div className="grid grid-cols-1 gap-6">
+          <div className="col-span-1">
+            <label
+              htmlFor="symbol"
+              className="block text-base font-semibold text-white neon-label"
+            >
+              Stock Symbol
+            </label>
+            <select
+              id="symbol"
+              value={formData.symbol}
+              onChange={handleSymbolChange}
+              className="mt-2 block w-full rounded-lg bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 neon-form p-3 text-white border border-gray-300 neon-input"
+              required
+            >
+              <option value="" className="bg-black text-white">
+                Select Stock Symbol
+              </option>
+              {availableTickers.map((ticker) => (
+                <option
+                  key={ticker.ticker}
+                  value={ticker.ticker}
+                  className="bg-black text-white"
+                >
+                  {ticker.ticker} - {ticker.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-
-        <div className="col-span-1">
-          <label htmlFor="name" className="block text-base font-semibold text-white neon-label">
-            Company Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            readOnly
-            className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
-            required
-          />
+          <div className="col-span-1">
+            <label htmlFor="name" className="block text-base font-semibold text-white neon-label">
+              Company Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              readOnly
+              className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
+              required
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <div className="col-span-1">
-          <label htmlFor="quantity" className="block text-base font-semibold text-white neon-label">
-            Quantity
-          </label>
-          <input
-            type="number"
-            id="quantity"
-            min="1"
-            value={formData.quantity}
-            onChange={(e) =>
-              setFormData({ ...formData, quantity: Number(e.target.value) })
-            }
-            className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
-            required
-          />
+        <div className="grid grid-cols-1 gap-6">
+          <div className="col-span-1">
+            <label htmlFor="quantity" className="block text-base font-semibold text-white neon-label">
+              Quantity
+            </label>
+            <input
+              type="number"
+              id="quantity"
+              min="1"
+              value={formData.quantity}
+              onChange={(e) =>
+                setFormData({ ...formData, quantity: Number(e.target.value) })
+              }
+              className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
+              required
+            />
+          </div>
+
+          <div className="col-span-1">
+            <label htmlFor="buyPrice" className="block text-base font-semibold text-white neon-label">
+              Buy Price
+            </label>
+            <input
+              type="number"
+              id="buyPrice"
+              min="0"
+              step="0.01"
+              value={formData.buyPrice}
+              readOnly
+              className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
+              required
+            />
+          </div>
         </div>
 
-        <div className="col-span-1">
-          <label htmlFor="buyPrice" className="block text-base font-semibold text-white neon-label">
-            Buy Price
-          </label>
-          <input
-            type="number"
-            id="buyPrice"
-            min="0"
-            step="0.01"
-            value={formData.buyPrice}
-            readOnly
-            className="mt-2 block w-full rounded-lg bg-transparent p-3 text-white border border-gray-300 neon-input"
-            required
-          />
+        <div className="flex justify-end gap-4 pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-6 py-3 text-base font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 neon-button"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-green-400 to-blue-500 rounded-lg hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-green-400 neon-button"
+          >
+            {initialData ? "Update Stock" : "Add Stock"}
+          </button>
         </div>
-      </div>
-
-      <div className="flex justify-end gap-4 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-6 py-3 text-base font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 neon-button"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-green-400 to-blue-500 rounded-lg hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-green-400 neon-button"
-        >
-          {initialData ? "Update Stock" : "Add Stock"}
-        </button>
-      </div>
-    </form>
+      </form>
+    </>
   );
 };
 
