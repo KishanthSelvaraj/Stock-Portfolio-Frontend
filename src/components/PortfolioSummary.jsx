@@ -110,17 +110,11 @@ const PortfolioSummary = ({ stats }) => {
       </div>
     )}
       {/* Flex container for left and right sections */}
-      <div className="flex flex-wrap lg:flex-nowrap space-y-6 md:space-y-0 md:space-x-8">
-        {/* Right section - Pie Chart */}
-        <div className="w-full lg:w-1/3 order-1 md:order-none mb-6">
-          <div className="bg-gray-800 p-6 rounded-xl shadow-xl border-2 border-indigo-500">
-            <div className="text-2xl font-semibold text-white mb-4">Portfolio Distribution</div>
-            <Pie data={pieChartData} />
-          </div>
-        </div>
+      <div className="flex flex-wrap xl:flex-nowrap space-y-6 md:space-y-5 md:space-x-8 ">
+      
 
         {/* Left section - Gain/Loss Data */}
-        <div className="flex-1 space-y-6 order-2 md:order-none">
+        <div className="flex-1 space-y-6 ">
           {/* Total Portfolio Value - Full Width */}
           <div className="bg-gray-800 overflow-hidden shadow-xl border-2 border-purple-600 rounded-xl hover:scale-105 transition-transform duration-300">
             <div className="p-6">
@@ -176,6 +170,14 @@ const PortfolioSummary = ({ stats }) => {
               </div>
             );
           })}
+        </div>
+          {/* Right section - Pie Chart */}
+
+          <div className="w-full xl:w-1/3  mt-10  ">
+          <div className="bg-gray-800 p-6 rounded-xl shadow-xl border-2 border-indigo-500">
+            <div className="text-2xl font-semibold text-white mb-4">Portfolio Distribution</div>
+            <Pie data={pieChartData} />
+          </div>
         </div>
       </div>
     </div>
